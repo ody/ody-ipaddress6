@@ -71,7 +71,7 @@ Facter.add(:ipaddress6) do
   confine :kernel => :linux
   setcode do
     ip = nil
-    output = %x{/sbin/ifconfig}
+    output = Facter::Util::Resolution.exec("/sbin/ifconfig")
 
     output.scan(/inet6 addr: ((?>[0-9,a-f,A-F]*\:{1,2})+[0-9,a-f,A-F]{0,4})/).each { |str|
       str = str.to_s
@@ -88,7 +88,7 @@ end
 Facter.add(:ipaddress6) do
   confine :kernel => %w{SunOS}
   setcode do
-    output = %x{/usr/sbin/ifconfig -a}
+    output = Facter::Util::Resolution.exec("/usr/sbin/ifconfig -a")
     ip = nil
 
     output.scan(/inet6 ((?>[0-9,a-f,A-F]*\:{0,2})+[0-9,a-f,A-F]{0,4})/).each { |str|
@@ -106,13 +106,13 @@ end
 Facter.add(:ipaddress6) do
   confine :kernel => %w{Darwin FreeBSD OpenBSD}
   setcode do
-    interout = %x{/usr/sbin/netstat -rn -f inet6}
-    interface = interout.scan(/^default\s+fe80\S+\s+[A-Z]+\s+\d\s+\d+\s+([a-z]+\d)/)
-    if interface
-      output = %x{/sbin/ifconfig #{interface}}
+    interout = Facter::Util::Resolution.exec("/usr/sbin/netstat -rn -f inet6")
+    interface = interout.scan(/^default\s+fe80\S+\s+[A-Z]+\s+\d\s+\d+\s+([a-z]+\d)/).to_s
+    if interface != ''
+      output = Facter::Util::Resolution.exec("/sbin/ifconfig #{interface}")
     else
       puts "Unable to find a default route interface, using first non-loopback address"
-      output = %x{/sbin/ifconfig -a}
+      output = Facter::Util::Resolution.exec("/sbin/ifconfig -a")
     end
     ip = nil
 

@@ -65,11 +65,11 @@ module Facter::Util::IP
     def self.get_all_interface_output
         case Facter.value(:kernel)
         when 'Linux', 'OpenBSD', 'NetBSD', 'FreeBSD', 'Darwin'
-            output = %x{/sbin/ifconfig -a}
+            output = Facter::Util::Resolution.exec("/sbin/ifconfig -a")
         when 'SunOS'
-            output = %x{/usr/sbin/ifconfig -a}
+            output = Facter::Util::Resolution.exec("/usr/sbin/ifconfig -a")
         when 'HP-UX'
-            output = %x{/bin/netstat -i}
+            output = Facter::Util::Resolution.exec("/bin/netstat -i")
         end
         output
     end
@@ -78,13 +78,13 @@ module Facter::Util::IP
         output = ""
         case Facter.value(:kernel)
         when 'Linux', 'OpenBSD', 'NetBSD', 'FreeBSD', 'Darwin'
-            output = %x{/sbin/ifconfig #{interface}}
+            output = Facter::Util::Resolution.exec("/sbin/ifconfig #{interface}")
         when 'SunOS'
-            output = %x{/usr/sbin/ifconfig #{interface}}
+            output = Facter::Util::Resolution.exec("/usr/sbin/ifconfig #{interface}")
         when 'HP-UX'
            mac = ""
-           ifc = %x{/usr/sbin/ifconfig #{interface}}
-           %x{/usr/sbin/lanscan}.scan(/(\dx\S+).*UP\s+(\w+\d+)/).each {|i| mac = i[0] if i.include?(interface) }
+           ifc = Facter::Util::Resolution.exec("/usr/sbin/ifconfig #{interface}")
+           Facter::Util::Resolution.exec("/usr/sbin/lanscan").scan(/(\dx\S+).*UP\s+(\w+\d+)/).each {|i| mac = i[0] if i.include?(interface) }
            mac = mac.sub(/0x(\S+)/,'\1').scan(/../).join(":")
            output = ifc + "\n" + mac
         end
@@ -108,7 +108,7 @@ module Facter::Util::IP
             return nil
         end
         regex = /SLAVE[,>].* (bond[0-9]+)/
-            ethbond = regex.match(%x{/sbin/ip link show #{interface}})
+            ethbond = regex.match(Facter::Util::Resolution.exec("/sbin/ip link show #{interface}"))
         if ethbond
             device = ethbond[1]
         else
