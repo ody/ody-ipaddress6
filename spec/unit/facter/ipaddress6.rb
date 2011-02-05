@@ -15,7 +15,7 @@ describe "IPv6 address fact" do
     linux_ifconfig = File.new(sample_output_file).read
     Facter.fact(:kernel).stubs(:value).returns("Linux")
     Facter::Util::Resolution.expects(:exec).with("/sbin/ifconfig").returns(linux_ifconfig)
-    Facter.value(:ipaddress6).should == "2610:10:20:209:212:3fff:febe:2201"
+    Facter.value(:ipaddress6).should == "2001:06a8:1100:cafe:daa2:5eff:fe8e:7444"
   end
 
   it "should return ipaddress6 information for Solaris" do
@@ -23,7 +23,7 @@ describe "IPv6 address fact" do
     sunos_ifconfig = File.new(sample_output_file).read
     Facter.fact(:kernel).stubs(:value).returns("SunOS")
     Facter::Util::Resolution.expects(:exec).with("/usr/sbin/ifconfig -a").returns(sunos_ifconfig)
-    Facter.value(:ipaddress6).should == "2610:10:20:209:203:baff:fe27:a7c"
+    Facter.value(:ipaddress6).should == "2001:06a8:1100:cafe:daa2:5eff:fe8e:7444"
   end
 
   it "should return ipaddress6 information for Darwin" do
@@ -32,7 +32,7 @@ describe "IPv6 address fact" do
     Facter.fact(:kernel).stubs(:value).returns("Darwin")
     Facter::Util::Resolution.expects(:exec).with("/usr/sbin/netstat -rn -f inet6").returns('')
     Facter::Util::Resolution.expects(:exec).with("/sbin/ifconfig -a").returns(darwin_ifconfig)
-    Facter.value(:ipaddress6).should == "2610:10:20:209:223:32ff:fed5:ee34"
+    Facter.value(:ipaddress6).should == "2001:06a8:1100:cafe:daa2:5eff:fe8e:7444"
   end
 
   it "should return ipaddress6 information for FreeBSD" do
@@ -41,7 +41,7 @@ describe "IPv6 address fact" do
     Facter.fact(:kernel).stubs(:value).returns("FreeBSD")
     Facter::Util::Resolution.expects(:exec).with("/usr/sbin/netstat -rn -f inet6").returns('')
     Facter::Util::Resolution.expects(:exec).with("/sbin/ifconfig -a").returns(freebsd_ifconfig)
-    Facter.value(:ipaddress6).should == "2610:10:20:208:20b:dbff:fe93:967"
+    Facter.value(:ipaddress6).should == "2001:06a8:1100:cafe:daa2:5eff:fe8e:7444"
   end
 
 end
